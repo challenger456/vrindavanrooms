@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divine Room Booking</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f0e6; /* Light cream color */
+        }
+
+        header {
+            background-color: #d4af37; /* Golden color */
+            padding: 15px 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header img {
+            height: 35px;
+        }
+
+        .search-bar {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .search-bar input {
+            width: 320px;
+            padding: 12px;
+            border: 2px solid #a0522d; /* Sienna color */
+            border-radius: 8px;
+            background-color: #fdf5e6; /* Floral white color */
+        }
+
+        .listings {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .listing-card {
+            background-color: #fff8dc; /* Cornsilk color */
+            border-radius: 10px;
+            margin: 15px;
+            width: 280px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .listing-card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .listing-details {
+            padding: 15px;
+        }
+
+        .listing-title {
+            font-size: 20px;
+            font-weight: bold;
+            font-family: 'Poppins', sans-serif;
+            margin: 5px 0;
+            color: #8b4513; /* Saddle brown color */
+        }
+
+        .listing-description {
+            font-size: 16px;
+            color: #2f4f4f; /* Dark slate gray color */
+        }
+
+        .no-results {
+            font-size: 20px;
+            font-family: 'Poppins', sans-serif;
+            color: #8b4513; /* Saddle brown color */
+            margin-top: 30px;
+        }
+    </style>
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-analytics.js";
+        import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDfmaR-TJum9zrkg0gkTTGYgWNt09FZtsI",
+            authDomain: "airbnb-5a2d4.firebaseapp.com",
+            projectId: "airbnb-5a2d4",
+            storageBucket: "airbnb-5a2d4.appspot.com",
+            messagingSenderId: "835528696626",
+            appId: "1:835528696626:web:2c4c8fdedf0282a920ad2b",
+            measurementId: "G-QTN358S9FN"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getFirestore(app);
+
+        // Function to fetch listings and render them
+        function renderListings(querySnapshot) {
+            const listingsContainer = document.getElementById('listings');
+            listingsContainer.innerHTML = '';
+
+            if (querySnapshot.length === 0) {
+                const noResultsMessage = document.createElement('div');
+                noResultsMessage.className = 'no-results';
+                noResultsMessage.innerText = 'Room not found, please search for another room.';
+                listingsContainer.appendChild(noResultsMessage);
+            } else {
+                querySnapshot.forEach((doc) => {
+                    const listing = doc.data();
+                    const listingCard = document.createElement('a');
+                    listingCard.className = 'listing-card';
+                    listingCard.href = `room.html?id=${doc.id}`;
+
+                    listingCard.innerHTML = `
+                        <img src="${listing.image}" alt="${listing.title}">
+                        <div class="listing-details">
+                            <div class="listing-title">${listing.title}</div>
+                            <div class="listing-description">${listing.description}</div>
+                        </div>
+                    `;
+
+                    listingsContainer.appendChild(listingCard);
+                });
+            }
+        }
+
+        // Function to perform search
+        function searchListings(searchTerm) {
+            const searchLower = searchTerm.toLowerCase();
+
+            const q = query(collection(db, "rooms"));
+            onSnapshot(q, (querySnapshot) => {
+                const filteredSnapshot = querySnapshot.docs.filter(doc =>
+                    doc.data().title.toLowerCase().includes(searchLower)
+                );
+
+                renderListings(filteredSnapshot);
+            });
+        }
+
+        // Event listener for search input and button
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('search-input');
+
+            searchInput.addEventListener('input', () => {
+                const searchTerm = searchInput.value;
+                searchListings(searchTerm);
+            });
+
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    const searchTerm = searchInput.value;
+                    searchListings(searchTerm);
+                }
+            });
+
+            // Initial load
+            searchListings('');
+        });
+    </script>
+</head>
+
+<body>
+
+    <header>
+        <img src="https://a0.muscache.com/airbnb/static/logotype_logomark_combined/airbnb_logo_detail@2x.png"
+            alt="Divine Logo">
+    </header>
+
+    <div class="search-bar">
+        <input type="text" placeholder="Search Your Divine Stay" id="search-input">
+    </div>
+
+    <div class="listings" id="listings">
+        <!-- Dynamic listings will be inserted here -->
+    </div>
+    
+
+</body>
+
+</html>

@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room Details</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
+       
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f0e6;
+            /* Light cream color */
+        }
+
+        header {
+            background-color: #d4af37;
+            /* Golden color */
+            padding: 15px 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header img {
+            height: 35px;
+        }
+
+        h1,
+        h5,
+        h6 {
+            color: #8b4513;
+            /* Saddle brown color */
+            font-weight: bold;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        h1 {
+            margin-top: 20px;
+            font-family: 'Poppins';
+            /* Add margin-top to create space */
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background-color: #d4af37;
+            /* Golden color */
+            border: none;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            border-radius: 80px;
+        }
+
+        .btn-primary:hover {
+            background-color: #c0942b;
+        }
+
+        .footer {
+            background-color: #d4af37;
+            /* Golden color */
+            color: white;
+        }
+
+        .footer a {
+            color: white;
+        }
+
+        .footer .social-icons i {
+            font-size: 24px;
+            margin-right: 15px;
+            transition: color 0.2s;
+        }
+
+        .footer .social-icons i:hover {
+            color: #c0942b;
+        }
+
+        .gallery {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .gallery .main-image {
+            width: 100%;
+            max-width: 600px;
+            height: 250px;
+            object-fit: cover;
+            margin-top: 72px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            border-radius: 15px;
+        }
+
+        .gallery-thumbnails {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: left;
+        }
+
+        .gallery-thumbnails img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            cursor: pointer;
+            transition: transform 0.2s;
+            border-radius: 15px;
+        }
+
+        .gallery-thumbnails img:hover {
+            transform: scale(1.1);
+        }
+
+        .call-now-btn {
+            margin-top: 20px;
+        }
+
+        .shimmer {
+            animation: shimmer 1.5s infinite;
+            background: linear-gradient(to right, #f6f7f8 8%, #edeef1 18%, #f6f7f8 33%);
+            background-size: 1000px 104px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -1000px 0;
+            }
+
+            100% {
+                background-position: 1000px 0;
+            }
+        }
+
+        .shimmer::before {
+            content: '';
+            display: block;
+            padding-top: 66.6%;
+            /* 3:2 aspect ratio for the shimmer effect */
+        }
+    </style>
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDfmaR-TJum9zrkg0gkTTGYgWNt09FZtsI",
+            authDomain: "airbnb-5a2d4.firebaseapp.com",
+            projectId: "airbnb-5a2d4",
+            storageBucket: "airbnb-5a2d4.appspot.com",
+            messagingSenderId: "835528696626",
+            appId: "1:835528696626:web:2c4c8fdedf0282a920ad2b",
+            measurementId: "G-QTN358S9FN"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const roomId = new URLSearchParams(window.location.search).get('id');
+            fetchRoomDetails(roomId);
+        });
+
+        async function fetchRoomDetails(roomId) {
+            const docRef = doc(db, 'rooms', roomId);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                const roomData = docSnap.data();
+
+                // Set room details
+                document.getElementById('room-title').textContent = roomData.title;
+                document.getElementById('room-title-box').textContent = roomData.title;
+                document.getElementById('room-host').textContent = 'Hosted by ' + roomData.host;
+                document.getElementById('room-description').textContent = roomData.description;
+                document.getElementById('room-beds').textContent = 'Beds: ' + roomData.beds;
+                document.getElementById('room-price').textContent = 'Price: $' + roomData.price + ' / Night';
+                document.getElementById('room-adults').textContent = 'Adults: ' + roomData.adults;
+                document.getElementById('room-category').textContent = 'Category: ' + roomData.category;
+
+                // Set the main image and make it visible
+                const mainImage = document.getElementById('gallery-main-image');
+                mainImage.classList.add('shimmer');
+
+                const img = new Image();
+                img.onload = () => {
+                    mainImage.classList.remove('shimmer');
+                    mainImage.style.backgroundImage = `url(${img.src})`;
+                    mainImage.style.backgroundSize = 'cover';
+                    mainImage.style.backgroundPosition = 'center';
+                };
+                img.src = roomData.gallery[0];
+
+                const amenitiesList = document.getElementById('room-amenities');
+                roomData.amenities.forEach(amenity => {
+                    const li = document.createElement('li');
+                    li.textContent = amenity;
+                    amenitiesList.appendChild(li);
+                });
+
+                const complementsList = document.getElementById('room-complements');
+                roomData.complements.forEach(complement => {
+                    const li = document.createElement('li');
+                    li.textContent = complement;
+                    complementsList.appendChild(li);
+                });
+
+                // Populate gallery images
+                const galleryContainer = document.querySelector('.gallery-thumbnails');
+                galleryContainer.innerHTML = ''; // Clear any existing images
+
+                roomData.gallery.forEach((url, index) => {
+                    const img = document.createElement('img');
+                    img.src = url;
+                    img.alt = 'Gallery Thumbnail ' + (index + 1);
+                    img.addEventListener('click', () => {
+                        mainImage.style.backgroundImage = `url(${url})`;
+                    });
+                    img.addEventListener('click', () => {
+                        openCarousel(roomData.gallery, index);
+                    });
+                    galleryContainer.appendChild(img);
+                });
+
+                // Set the 'Call Now' button link
+                const callNowBtn = document.getElementById('call-now-btn');
+                callNowBtn.href = 'tel:' + roomData.contact;
+                callNowBtn.innerHTML = `<i class="fas fa-phone-alt "></i> &nbsp;  ${roomData.contact}`;
+            } else {
+                console.error("No such document!");
+            }
+        }
+
+        function openCarousel(images, startIndex) {
+            const carouselInner = document.getElementById('carousel-inner');
+            carouselInner.innerHTML = '';
+
+            images.forEach((image, index) => {
+                const carouselItem = document.createElement('div');
+                carouselItem.classList.add('carousel-item');
+                if (index === startIndex) {
+                    carouselItem.classList.add('active');
+                }
+
+                const img = document.createElement('img');
+                img.src = image;
+                img.classList.add('d-block', 'w-100');
+
+                carouselItem.appendChild(img);
+                carouselInner.appendChild(carouselItem);
+            });
+
+            $('#galleryModal').modal('show');
+        }
+    </script>
+</head>
+
+<body>
+    <header>
+        <img src="https://a0.muscache.com/airbnb/static/logotype_logomark_combined/airbnb_logo_detail@2x.png"
+            alt="Divine Logo">
+    </header>
+
+    <!-- Room Details -->
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <h1 id="room-title">Room Title</h1>
+                <div class="card">
+                    <div class="card-body">
+                        <h5 id="room-title-box">Room Title</h5>
+                        <h7 id="room-host">Hosted by Host Name</h7>
+                        <p id="room-description">Room description goes here...</p>
+                        <h6>Amenities</h6>
+                        <ul id="room-amenities"></ul>
+                        <h6>Complements</h6>
+                        <ul id="room-complements"></ul>
+                        <p id="room-beds">Beds: </p>
+                        <p id="room-price">Price: </p>
+                        <p id="room-adults">Adults: </p>
+                        <p id="room-category">Category: </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 gallery">
+                <div id="gallery-main-image" class="shimmer main-image"></div>
+                <div class="gallery-thumbnails"></div>
+                <a id="call-now-btn" class="btn btn-primary call-now-btn" href="#">Call Now </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="galleryModal" tabindex="-1" role="dialog" aria-labelledby="galleryModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="galleryModalLabel">Gallery</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+                        <div class="carousel-inner" id="carousel-inner">
+                            <!-- Carousel items will be added here -->
+                        </div>
+                        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button"
+                            data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button"
+                            data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <h5>About Us</h5>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero.</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>Contact</h5>
+                    <ul>
+                        <li><a href="#">Email</a></li>
+                        <li><a href="#">Phone</a></li>
+                        <li><a href="#">Address</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Quick Links</h5>
+                    <ul>
+                        <li><a href="#">Rooms</a></li>
+                        <li><a href="#">Hotel</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Follow Us</h5>
+                    <ul class="social-icons">
+                        <li><a href="#"><i class="fab fa-facebook"></i></a></li>
+                        <li><a href="#"><i class="fab fa-twitter"></i></a></li>
+                        <li><a href="#"><i class="fab fa-instagram"></i></a></li>
+                        <li><a href="#"><i class="fab fa-linkedin"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+</body>
+
+</html>
