@@ -8,7 +8,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
-        
+
         body {
             font-family: 'Roboto', sans-serif;
             margin: 0;
@@ -27,6 +27,31 @@
 
         header img {
             height: 35px;
+        }
+
+        nav {
+            display: flex;
+            gap: 20px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .hamburger div {
+            width: 25px;
+            height: 3px;
+            background-color: white;
+            margin: 4px 0;
         }
 
         .search-bar {
@@ -53,7 +78,7 @@
             background-color: #fff8dc; /* Cornsilk color */
             border-radius: 10px;
             margin: 15px;
-            width: 280px;
+            width: 300px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             cursor: pointer;
             text-decoration: none;
@@ -89,6 +114,40 @@
             font-family: 'Poppins', sans-serif;
             color: #8b4513; /* Saddle brown color */
             margin-top: 30px;
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                display: none;
+                flex-direction: column;
+                background-color: #d4af37;
+                width: 100%;
+                padding: 10px 0;
+                position: absolute;
+                top: 70px;
+                left: 0;
+                text-align: center;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            nav.show {
+                display: flex;
+            }
+        }
+
+        footer {
+            background-color: #d4af37;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        footer p {
+            margin: 5px 0;
         }
     </style>
     <!-- Firebase App (the core Firebase SDK) -->
@@ -177,14 +236,34 @@
             // Initial load
             searchListings('');
         });
+
+        // Hamburger menu toggle
+        document.addEventListener('DOMContentLoaded', () => {
+            const hamburger = document.querySelector('.hamburger');
+            const navLinks = document.querySelector('nav');
+
+            hamburger.addEventListener('click', () => {
+                navLinks.classList.toggle('show');
+            });
+        });
     </script>
 </head>
 
 <body>
 
     <header>
-        <img src="https://a0.muscache.com/airbnb/static/logotype_logomark_combined/airbnb_logo_detail@2x.png"
-            alt="Divine Logo">
+        <img src="https://a0.muscache.com/airbnb/static/logotype_logomark_combined/airbnb_logo_detail@2x.png" alt="Divine Logo">
+        <div class="hamburger">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <nav>
+            <a href="#">List Your Hotel</a>
+            <a href="#">Blog</a>
+            <a href="#">About</a>
+            <a href="#">Contact</a>
+        </nav>
     </header>
 
     <div class="search-bar">
@@ -194,7 +273,12 @@
     <div class="listings" id="listings">
         <!-- Dynamic listings will be inserted here -->
     </div>
-    
+
+    <footer>
+        <p>&copy; 2024 Divine Room Booking</p>
+        <p>All Rights Reserved</p>
+        <p><a href="#" style="color: white; text-decoration: none;">Privacy Policy</a> | <a href="#" style="color: white; text-decoration: none;">Terms of Service</a></p>
+    </footer>
 
 </body>
 
